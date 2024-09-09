@@ -1,7 +1,5 @@
 # Yolo_Visualisation
 
-Here's a `README.md` for your Flask-based image viewer project:
-
 ---
 
 # Image Viewer with Bounding Boxes
