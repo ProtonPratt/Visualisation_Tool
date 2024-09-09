@@ -1,0 +1,5 @@
+Flask==3.0.3
+Flask-Compress==1.15
+Flask-Cors==3.0.10
+numpy==1.24.1
+opencv-python==4.10.0.82
