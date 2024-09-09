@@ -95,15 +95,21 @@
     <script>
         function updateImage() {
             var form = document.getElementById('image-selector-form');
-            console.log(form.action);
-            // form.action = "{{ url_for('view_image', index=prev_index, mode=mode, metric=metric) }}".replace('prev_index', form.elements['index'].value);
             var newIndex = form.elements['index'].value;
-            var mode = "{{ mode }}";  // Ensure these are properly set in your template
+            var mode = "{{ view_mode }}";  // Ensure these are properly set in your template
             var metric = "{{ metric }}";
-            
+
+            var newURL = `/image/${newIndex}?mode=${mode}&metric=${metric}`;
+
+            // Redirect to the new URL
+            window.location.href = newURL;
+    
             // Construct the URL correctly
-            form.action = `/image/${newIndex}?mode=${mode}&metric=${metric}`;
-            form.submit();
+            // form.action = `/image/${newIndex}?mode=${mode}&metric=${metric}`;
+            // console.log(form.action);
+            // form.submit();
+
+            return false;
         }
         function submitViewModeForm() {
             var form = document.getElementById('view-mode-form');

@@ -44,7 +44,7 @@ def process_image_with_boxes(image_path, bounding_boxes, bounding_boxes_gt=None)
     if bounding_boxes_gt is not None:
         for box in bounding_boxes_gt:
             x1, y1, x2, y2 = map(int, box)
-            cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), -1)    
+            cv2.rectangle(image, (x1, y1), (x2, y2), (255, 0, 0), -1)    
         # Create a translucent overlay by blending the original image with the overlay
         alpha = 0.8  # Transparency factor (0.0 to 1.0)
         cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0, image)
@@ -69,9 +69,6 @@ def view_image(index):
     
     image_names = [d[3] for d in sorted_images]
     
-    print(index)
-    print(image_names)
-    
     # images = get_image_data()
     images = sorted_images
     
@@ -93,6 +90,9 @@ def view_image(index):
     next_index = (index + 1) % total_images
 
     view_mode = request.args.get('mode', 'original')
+    
+    print(index, metric, view_mode)
+    print(image_names)
 
     return render_template('image_viewer.html',
                            recall=recall,
