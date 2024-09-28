@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON File Viewer</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f9fc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 50px;
+            font-size: 2.5em;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            max-width: 600px;
+            margin: 50px auto;
+        }
+
+        li {
+            margin: 10px 0;
+            transition: transform 0.3s ease;
+        }
+
+        a {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #3498db;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: block;
+            text-align: center;
+            font-size: 1.2em;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #2980b9;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        li:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Add some padding to the body */
+        body {
+            padding-bottom: 50px;
+        }
+
+        /* Footer for added elegance */
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+                margin-top: 30px;
+            }
+
+            a {
+                font-size: 1em;
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Available JSON Files</h1>
+    <ul>
+        {% for file, threshold in json_files %}
+        <li><a href="{{ url_for('open_json', filename=file, threshold=threshold) }}">{{ file }} (Threshold: {{ threshold }})</a></li>
+        {% endfor %}
+    </ul>
+
+    <footer>
+        <p>&copy; 2024 JSON Viewer. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

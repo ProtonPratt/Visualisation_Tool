@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Viewer with Bounding Boxes</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.css" />
+    <script src="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.umd.js"></script>
 </head>
 <body>
     <div class="sidebar">
-        <h2>Sort Images</h2>
+        <!-- Add logos here -->
+        <div class="logo">
+            <img src="../static/logos/cvit_logo.jpeg" alt="Logo" class="img-fluid">
+        </div>
+        <h3>Select Metrics</h3>
         <label for="sort-dropdown">Sort by:</label>
         <form id="sort-form" method="GET">
             <select id="sort-dropdown" name="metric" onchange="updateSort()">
@@ -17,33 +23,17 @@
                 <option value="precision" {% if metric == 'precision' %}selected{% endif %}>Precision</option>
                 <option value="miou" {% if metric == 'miou' %}selected{% endif %}>mIoU</option>
             </select>
+
+            <!-- Sort Order Dropdown -->
+            <label for="sort-order-dropdown">Order:</label>
+            <select id="sort-order-dropdown" name="order" onchange="updateSort()">
+                <option value="desc" {% if order == 'desc' %}selected{% endif %}>Descending</option>
+                <option value="asc" {% if order == 'asc' %}selected{% endif %}>Ascending</option>
+            </select>
+
             <input type="hidden" name="index" value="{{ index }}">
             <input type="hidden" name="mode" value="{{ view_mode }}">
         </form>
-    </div>
-    <div class="container">
-        <!-- Main Heading -->
-        <div class="row">
-            <div class="col text-center">
-                <h1 class="text-center">Image Viewer</h1>
-            </div>
-        </div>
-
-        <!-- Dropdown to select image -->
-        <div class="row">
-            <div class="col text-center">
-                <label for="image-dropdown">Select an image:</label>
-                <form id="image-selector-form" method="GET">
-                    <select id="image-dropdown" name="index" onchange="updateImage()">
-                        {% for idx in range(total_images) %}
-                            <option value="{{ idx }}" {% if idx == index %}selected{% endif %}>
-                                {{ idx + 1 }}:{{image_names[idx]}}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </form>
-            </div>
-        </div>
 
         <!-- Dropdown to select view mode -->
         <div class="text-center mb-3">
@@ -58,6 +48,43 @@
             </form>
         </div>
 
+        <!-- Language Dropdown -->
+        <label for="language-dropdown">Language:</label>
+        <select id="language-dropdown" name="language" onchange="updateLang()">
+            <option value="all" {% if language == 'all' %}selected{% endif %}>All</option>
+            {% for lang in available_languages %}
+                <option value="{{ lang }}" {% if lang == language %}selected{% endif %}>{{ lang }}</option>
+            {% endfor %}
+        </select>
+
+        <div class="logo_iiit">
+            <img src="../static/logos/International_Institute_of_Information_Technology,_Hyderabad_logo.png" alt="Logo" class="img-fluid">
+        </div>
+
+    </div>
+    <div class="container">
+        <!-- Main Heading -->
+        <div class="row">
+            <div class="col text-center">
+                <h3 class="text-center">Image Viewer</h3>
+            </div>
+        </div>
+
+        <!-- Dropdown to select image -->
+        <div class="row">
+            <div class="col text-center">
+                <form id="image-selector-form" method="GET">
+                    <select id="image-dropdown" name="index" onchange="updateImage()">
+                        {% for idx in range(total_images) %}
+                            <option value="{{ idx }}" {% if idx == index %}selected{% endif %}>
+                                {{ idx + 1 }}:{{image_names[idx]}}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+        </div>
+
         <!-- Display Recall, Precision, and mIoU -->
         <div class="row">
             <div class="col text-center">
@@ -65,6 +92,7 @@
                     <p><strong>Recall:</strong> {{ recall }}</p>
                     <p><strong>Precision:</strong> {{ precision }}</p>
                     <p><strong>mIoU:</strong> {{ miou }}</p>
+                    <p><strong>Language:</strong> {{ image_language }}</p>
                 </div>
             </div>
         </div>
@@ -73,10 +101,15 @@
         <div class="row">
             <div class="col text-center">
                 <div class="image-container" id="image-container">
-                    <img id="selected-image" src="{{ url_for('get_processed_image', index=index, mode=view_mode) }}" class="img-fluid" alt="Image">
-                    <div class="zoom-controls">
-                        <label for="zoom-slider">Zoom Level:</label>
-                        <input type="range" id="zoom-slider" min="1" max="5" step="0.1" value="1" onchange="updateZoom()">
+                    <div id="zoomist" class="zoomist-container">
+                        <div class="zoomist-wrapper">
+                            <!-- zoomist-image is required -->
+                            <div class="zoomist-image">
+                              <!-- you can add anything you want to zoom here. -->
+                              <img id="selected-image" src="{{ url_for('get_processed_image', index=index, mode=view_mode, lang=language) }}" class="img-fluid" alt="Image">
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -85,51 +118,92 @@
         <!-- Navigation Buttons -->
         <div class="row mt-3">
             <div class="col text-left">
-                <a href="{{ url_for('view_image', index=prev_index, mode=view_mode, metric=metric) }}" class="btn btn-primary">Previous</a>
+                <a href="{{ url_for('view_image', index=prev_index, mode=view_mode, metric=metric, order=order, lang=language) }}" class="btn btn-primary">Previous</a>
             </div>
             <div class="col text-right">
-                <a href="{{ url_for('view_image', index=next_index, mode=view_mode, metric=metric) }}" class="btn btn-primary">Next</a>
+                <a href="{{ url_for('view_image', index=next_index, mode=view_mode, metric=metric, order=order, lang=language) }}" class="btn btn-primary">Next</a>
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.umd.js"></script>
+    <script>
+        // Wait for the image to load before initializing Zoomist
+        document.getElementById('selected-image').addEventListener('load', function() {
+            initializeZoomist();
+        });
+
+        function initializeZoomist() {
+            const zoomist = new Zoomist('.zoomist-container', {
+                // Optional parameters
+                maxScale: 4,
+                bounds: true,
+                // if you need slider
+                slider: true,
+                // if you need zoomer
+                zoomer: true
+              })
+        }
+    </script>
     <script>
         function updateImage() {
             var form = document.getElementById('image-selector-form');
             var newIndex = form.elements['index'].value;
+            var language = document.getElementById('language-dropdown').value;
             var mode = "{{ view_mode }}";  // Ensure these are properly set in your template
             var metric = "{{ metric }}";
+            var order = "{{ order }}";
 
-            var newURL = `/image/${newIndex}?mode=${mode}&metric=${metric}`;
+            var newURL = `/image/${newIndex}?mode=${mode}&metric=${metric}&order=${order}&lang=${language}`;
 
             // Redirect to the new URL
             window.location.href = newURL;
-    
-            // Construct the URL correctly
-            // form.action = `/image/${newIndex}?mode=${mode}&metric=${metric}`;
-            // console.log(form.action);
-            // form.submit();
-
             return false;
         }
         function submitViewModeForm() {
             var form = document.getElementById('view-mode-form');
-            form.action = "{{ url_for('view_image', index=index, mode=newmode, metric=metric) }}".replace('newmode', form.elements['mode'].value);
-            form.submit();
-        }
-        function updateZoom() {
-            var slider = document.getElementById('zoom-slider');
-            var zoomFactor = slider.value;
-
-            var imageContainer = document.getElementById('image-container');
-            imageContainer.style.setProperty('--zoom-factor', zoomFactor);
-            imageContainer.classList.add('zoomed');
+            var newMode = form.elements['mode'].value;
+            var language = document.getElementById('language-dropdown').value;
+            
+            // Get necessary parameters
+            var index = "{{ index }}";  
+            var metric = "{{ metric }}";  
+            var order = "{{ order }}";
+        
+            // Manually construct the URL
+            var url = `/image/${index}?mode=${newMode}&metric=${metric}&order=${order}&lang=${language}`;
+        
+            // Redirect to the constructed URL
+            window.location.href = url;
         }
         function updateSort() {
-            var form = document.getElementById('sort-form');
-            form.action = "{{ url_for('view_image', index=index, mode=mode, metric=newmetric) }}".replace('newmetric', form.elements['mode'].value);
-            form.submit();
+            var metric = document.getElementById('sort-dropdown').value;
+            var order = document.getElementById('sort-order-dropdown').value;
+            var index = document.querySelector('input[name="index"]').value;
+            var mode = document.querySelector('input[name="mode"]').value;
+            var language = document.getElementById('language-dropdown').value;
+        
+            // Construct the new URL
+            var newUrl = `/image/${index}?metric=${metric}&order=${order}&mode=${mode}&lang=${language}`;
+        
+            // Redirect to the new URL manually
+            window.location.href = newUrl;
         }
         
+        function updateLang() {
+            var metric = document.getElementById('sort-dropdown').value;
+            var order = document.getElementById('sort-order-dropdown').value;
+            var language = document.getElementById('language-dropdown').value;
+            var index = document.querySelector('input[name="index"]').value;
+            var mode = document.querySelector('input[name="mode"]').value;
+            
+            // Construct the new URL
+            var newUrl = `/image/${index}?metric=${metric}&order=${order}&mode=${mode}&lang=${language}`;
+
+            console.log('lang');
+            
+            // Redirect to the new URL manually
+            window.location.href = newUrl;
+        }
     </script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
