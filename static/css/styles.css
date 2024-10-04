@@ -16,6 +16,25 @@ body {
     border-radius: 10px;
 }
 
+.main-content {
+    display: flex;               /* Enable flexbox */
+    justify-content: space-between; /* Distribute space between containers */
+    gap: 20px;                   /* Optional: Space between the two containers */
+    padding: 20px;
+    max-width: 1000px;           /* Maximum width for the main content */
+    /* max-height: fit-content; */
+    margin: 0 auto;    
+}
+
+.image {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
 /* Main heading */
 h1 {
     font-size: 2.2rem;
@@ -164,12 +183,18 @@ label {
 
 /* Centering the dropdown form */
 #image-selector-form {
-    /* display: flex; */
+    display: flex;
     display:contents;
     justify-content: center;
     align-items: center;
     margin-top: 10px;
     padding-bottom: 10px;
+}
+
+.custom-dropdown {
+    width:600px; /* Adjust this width as needed */
+    padding: 5px;
+    border-radius: 5px;
 }
 
 select {
@@ -186,8 +211,10 @@ select:focus {
 
 /* Navigation buttons */
 .btn {
+    margin-top: 30px;
     padding: 10px 20px;
-    font-size: 16px;
+    margin-right: 10px;
+    font-size: 14px;
     text-decoration: none;
     display: inline-block;
     border-radius: 5px;

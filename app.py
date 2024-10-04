@@ -186,9 +186,9 @@ def view_image(index):
         index = 0
 
     image_data = images[index]
-    recall = image_data[0]
-    precision = image_data[1]
-    miou = image_data[2]
+    recall = round(image_data[0],4)
+    precision = round(image_data[1],4)
+    miou = round(image_data[2],4)
     image_name = image_data[3]
     image_language = image_lang.get(image_name.split('_')[0], 'Unknown')
     bounding_boxes = image_data[4]
