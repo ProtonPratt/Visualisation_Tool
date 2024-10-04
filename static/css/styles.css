@@ -246,6 +246,11 @@ select:focus {
     align-items: center;
 }
 
+.bad_marker {
+    margin-top: 15px;
+    color: red;
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
     .row {

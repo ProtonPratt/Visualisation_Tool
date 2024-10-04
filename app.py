@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, send_file, request
+from flask import Flask, render_template, redirect, url_for, send_file, request, jsonify, request
 import json
 import cv2
 import numpy as np
@@ -13,10 +13,27 @@ image_data = None
 image_lang = {}
 languages = []
 global_lang_data = []
+bad_image_data = []
 
+# Load the image data
 with open('data/meta_100.json') as f:
     image_data = json.load(f)
     
+# Load the bad image data
+def load_bad_image_data():
+    global image_data
+    if os.path.exists('data/bad_images.json'):
+        with open('data/bad_images.json') as f:
+            bad_image_data = json.load(f)
+    else:
+        bad_image_data = []
+        with open('data/bad_images.json', 'w') as f:
+            json.dump(bad_image_data, f)
+            
+    return bad_image_data
+
+bad_image_data = load_bad_image_data()    
+
 def extract_langdata():
     # Extract language data from JSON
     global image_lang
@@ -43,10 +60,9 @@ def extract_langdata():
     languages = list(set([i.lower() for i in image_lang.values()]))
 
 extract_langdata()
-# print(image_lang)
 
+# Get the image names
 image_names = [d[3] for d in image_data]
-
 sorted_images = image_data
 
 # Load image and bounding box data from JSON
@@ -75,6 +91,13 @@ def get_sorted_LANG_images(language):
             lang_image_list.append(image)
             
     return lang_image_list
+
+# Check if the image is bad
+def is_bad_image(image_name):
+    if image_name in bad_image_data:
+        return True
+    else:
+        return False
 
 def get_0_image_data():
     return [[0, 0, 0, 'No Image', [], []]]
@@ -146,6 +169,39 @@ def view_json():
     # Redirect to the first image after loading the new data
     return redirect(url_for('index'))
 
+# Save the bad image data
+@app.route('/save_bad_image', methods=['POST'])
+def save_bad_image():
+    global bad_image_data
+    
+    data = request.get_json()
+    
+    print(data)
+    
+    if data is None:
+        return "Error: No data provided", 400
+    
+    image_name = data['image_name']
+    
+    if image_name not in bad_image_data:
+        bad_image_data.append(image_name)
+        with open('data/bad_images.json', 'w') as f:
+            json.dump(bad_image_data, f)
+        
+        try: 
+            with open('data/bad_images.txt','a') as f:
+                f.write(image_name + '\n')
+        except:
+            with open('data/bad_images.txt','w') as f:
+                f.write(image_name + '\n')
+                
+    return jsonify({'message': 'Image marked as bad!'})
+
+@app.route('/remove_bad_image')
+def remove_bad_image():
+    pass
+    
+
 @app.route('/image/<int:index>')
 def view_image(index):
     global sorted_images
@@ -193,6 +249,7 @@ def view_image(index):
     image_language = image_lang.get(image_name.split('_')[0], 'Unknown')
     bounding_boxes = image_data[4]
     ground_truth = image_data[5]
+    bad_image = is_bad_image(image_name)
 
     prev_index = (index - 1) % total_images
     next_index = (index + 1) % total_images
@@ -200,6 +257,7 @@ def view_image(index):
     view_mode = request.args.get('mode', 'original')
     
     print(index, metric, view_mode, order, image_name, image_language, selected_lang)
+    print('bad_image:', bad_image)
     # print(image_names)
 
     return render_template('image_viewer.html',
@@ -219,6 +277,7 @@ def view_image(index):
                            prev_index=prev_index,
                            metric=metric,
                            order=order,
+                           is_bad_image=bad_image,
                            next_index=next_index)
 
 @app.route('/get_processed_image/<int:index>/<string:mode>')
