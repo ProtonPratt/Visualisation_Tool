@@ -9,7 +9,10 @@
     <script src="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.umd.js"></script>
 </head>
 <body>
-    <div class="sidebar">
+    <div class="sidebar" id='sidebar'>
+        <!-- Toggle Button -->
+        <button id="toggle-btn" class="toggle-btn" onclick="toggleSidebar()">☰</button>
+
         <!-- Add logos here -->
         <div class="logo">
             <img src="../static/logos/cvit_logo.jpeg" alt="Logo" class="img-fluid">
@@ -165,6 +168,10 @@
         }
     </script>
     <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');  // Toggle collapsed class
+        }
         function updateImage() {
             var form = document.getElementById('image-selector-form');
             var newIndex = form.elements['index'].value;
