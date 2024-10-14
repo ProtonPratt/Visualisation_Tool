@@ -68,8 +68,14 @@ This project is a Flask-based web application for viewing images along with pred
     python app.py
     ```
     By default, the app runs on `http://0.0.0.0:8050`, and is accessible on your local network.
+    It can be change to the desired port in the __main__
 
-5. **Access the Application**:
+  1. add the json file path in given structure above replace it in `filename` (line 11)
+  2. while opening make sure to call the appropriate threshold (image_data['50']).
+  3. Change the image dir in function `get_processed_image` to view the images.
+  4. There are 2 kinds of application app.py which runs with gt and app_without_gt it can run without gt but jsons structure is const.
+
+6. **Access the Application**:
     Open your browser and navigate to:
     ```
     http://localhost:8050/
