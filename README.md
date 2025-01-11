@@ -134,4 +134,4 @@ This project is a Flask-based web application for viewing images along with pred
 
 ### EMH update
 - <img width="1273" alt="image" src="https://github.com/user-attachments/assets/64bd01fa-e333-4ecd-b132-8c956244fbbb" />
-
+- The files will be stored in data/difficulty_lists/ (currently in prat ssd nayana)
