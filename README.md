@@ -131,3 +131,7 @@ This project is a Flask-based web application for viewing images along with pred
 ## Future Enhancements
 
 - Add more sorting options or additional metrics.
+
+### EMH update
+- <img width="1273" alt="image" src="https://github.com/user-attachments/assets/64bd01fa-e333-4ecd-b132-8c956244fbbb" />
+
